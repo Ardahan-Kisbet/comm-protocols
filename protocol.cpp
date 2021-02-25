@@ -1,9 +1,9 @@
 #include <protocol.h>
 
-std::unique_ptr<IProtocol> ProtocolFactory::CreateProtocol(ProtocolType type)
+std::unique_ptr<IProtocol> ProtocolFactory::CreateProtocol()
 {
 	std::unique_ptr<IProtocol> temp;
-	switch (type)
+	switch (m_type)
 	{
 	case ProtocolType::Protocol_HTTP:
 		temp = std::make_unique<HTTP>();
