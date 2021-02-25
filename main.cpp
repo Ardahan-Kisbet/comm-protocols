@@ -6,7 +6,7 @@ using namespace std;
 
 int main()
 {  
-    std::cout<<"main"<<std::endl;
+    std::cout<<"main from client"<<std::endl;
     ProtocolFactory factory(ProtocolType::Protocol_UDP);
     unique_ptr<IProtocol> protocol = factory.CreateProtocol();
     std::cout<< std::endl<<static_cast<int>(protocol->GetType()) <<std::endl;
