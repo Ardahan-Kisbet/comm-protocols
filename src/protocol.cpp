@@ -17,7 +17,7 @@ std::unique_ptr<IProtocol> ProtocolFactory::CreateProtocol()
 	default:
 		break;
 	}
-	return std::move(temp);
+	return temp;
 }
 
 ProtocolType HTTP::GetType()

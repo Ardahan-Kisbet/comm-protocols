@@ -1,11 +1,23 @@
+#Compiler
+CC 				= g++
+
+# Flags
+CFLAGS 			= -W -Wall -std=c++11
+IFLAGS 			= -I ${INC_DIR}
+
+# Include Directory
+INC_DIR = include
+
 binary: main.o protocol.o
-	g++ main.o protocol.o -o binary
+	# creating binary
+	$(CC) main.o protocol.o -o binary
 
 main.o: main.cpp
-	g++ -c main.cpp -I include
+	$(CC) -c main.cpp $(IFLAGS)
 
-protocol.o: protocol.cpp
-	g++ -c protocol.cpp -I include
+protocol.o: src/protocol.cpp
+	$(CC) -c src/protocol.cpp $(IFLAGS)
 
 clean:
+	# removing object files and binary
 	rm *.o binary
