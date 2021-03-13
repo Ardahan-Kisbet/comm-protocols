@@ -4,18 +4,35 @@
 #include <vector>
 #include <memory>
 
-enum class ProtocolType
-{
-	Protocol_HTTP,
-	Protocol_TCP,
-	Protocol_UDP
-};
+// OS CHECK for SOCKET HEADERS
+#ifdef _WIN32
+// both WIN32 & WIN64
+#define os "windows"
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <stdio.h>
+
+#elif __linux__
+// linux
+#define os "linux"
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <netdb.h>
+
+#else
+#define os "unknown"
+
+#endif
+
+enum class ProtocolType;
 
 class IProtocol
 {
 public:
-	//virtual void OpenConn() = 0;
-	//virtual void Dispose() = 0;
 	virtual ProtocolType GetType() = 0;
 	IProtocol(){};
 	virtual ~IProtocol(){};
@@ -59,6 +76,13 @@ public:
 	~ProtocolFactory(){}; // default destructor
 	const IProtocol *GetProtocol() const;
 	std::unique_ptr<IProtocol> CreateProtocol();
+};
+
+enum class ProtocolType
+{
+	Protocol_HTTP = 0,
+	Protocol_TCP,
+	Protocol_UDP
 };
 
 #endif
