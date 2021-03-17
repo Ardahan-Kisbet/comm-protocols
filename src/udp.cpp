@@ -14,4 +14,11 @@ namespace udp_client_server
     {
         return this->m_port;
     }
+
+    // UDP Socket Connection
+    void UdpClient::OpenConnection()
+    {
+        int sockfd;
+        char buffer[LibConstants::BUFFER_SIZE];
+    }
 }
