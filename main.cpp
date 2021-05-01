@@ -7,7 +7,7 @@
 
 void create_client()
 {
-    udp_client_server::UdpClient udpClient("121.0.t0.1", 0);
+    udp_client_server::UdpClient udpClient("127.0.0.1", 0);
     std::cout << "udp client constructed.." << std::endl;
     udpClient.OpenConn();
 }

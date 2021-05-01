@@ -18,6 +18,12 @@ namespace udp_client_server
         return this->m_port;
     }
 
+    // Getter for Protocol Type
+    ProtocolType UdpClient::GetType()
+    {
+        return ProtocolType::Protocol_UDP;
+    }
+
     // create UDP socket (client)
     // send message to server
     // wait until response from server is received

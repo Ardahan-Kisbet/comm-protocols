@@ -5,10 +5,11 @@
 #include <netinet/in.h>
 #include <string>
 #include "constants.h"
+#include "protocol.h"
 
 namespace udp_client_server
 {
-    class UdpClient
+    class UdpClient : public IProtocol
     {
     private:
         std::string m_address;
@@ -16,9 +17,11 @@ namespace udp_client_server
 
     public:
         UdpClient(const std::string &address, int port) : m_address(address), m_port(port) {}
+        ~UdpClient() {}
         std::string GetAddress() const;
         int GetPort() const;
         void OpenConn();
+        ProtocolType GetType() override;
     };
 
     class UdpServer
