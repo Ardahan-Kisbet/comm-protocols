@@ -46,26 +46,28 @@ namespace udp_client_server
         serverAddress.sin_family = AF_INET;
         serverAddress.sin_port = htons(LibConstants::SERVER_PORT);
         serverAddress.sin_addr.s_addr = INADDR_ANY; // accept any incoming message
-
-        std::string msg = "Message from client..";
-        sendto(sockfd, msg.c_str(), msg.size(), MSG_CONFIRM, (const SOCK_ADDR_TYPE)&serverAddress, sizeof(serverAddress));
-
-        std::cout << "client message is sent." << std::endl;
-
-        int received, address_len;
-        received = recvfrom(sockfd, buffer, sizeof(buffer), MSG_WAITALL, (SOCK_ADDR_TYPE)&serverAddress, (socklen_t *)&address_len);
-
-        if (received < 0)
+        while (true)
         {
-            throw "Couldn't received message!";
+
+            std::string msg = "Message from client..";
+            sendto(sockfd, msg.c_str(), msg.size(), MSG_CONFIRM, (const SOCK_ADDR_TYPE)&serverAddress, sizeof(serverAddress));
+
+            std::cout << "client message is sent." << std::endl;
+
+            int received, address_len;
+            received = recvfrom(sockfd, buffer, sizeof(buffer), MSG_WAITALL, (SOCK_ADDR_TYPE)&serverAddress, (socklen_t *)&address_len);
+
+            if (received < 0)
+            {
+                throw "Couldn't received message!";
+            }
+            // Else: message is received successfully.
+
+            // received is point to to last index
+            buffer[received] = '\0';
+
+            std::cout << "Server says: " << buffer << std::endl;
         }
-        // Else: message is received successfully.
-
-        // received is point to to last index
-        buffer[received] = '\0';
-
-        std::cout << "Server says: " << buffer << std::endl;
-
         // close socket
         shutdown(sockfd, SHUT_RDWR);
         std::cout << "udp client closed.." << std::endl;
@@ -113,20 +115,24 @@ namespace udp_client_server
         int received, address_len;
 
         address_len = sizeof(clientAddress);
-        received = recvfrom(sockfd, buffer, sizeof(buffer), MSG_WAITALL, (SOCK_ADDR_TYPE)&clientAddress, (socklen_t *)&address_len);
-
-        if (received < 0)
+        while (true)
         {
-            throw "Couldn't received message!";
+
+            received = recvfrom(sockfd, buffer, sizeof(buffer), MSG_WAITALL, (SOCK_ADDR_TYPE)&clientAddress, (socklen_t *)&address_len);
+
+            if (received < 0)
+            {
+                throw "Couldn't received message!";
+            }
+            // Else: message is received successfully.
+
+            // received is point to to last index
+            buffer[received] = '\0';
+
+            std::cout << "Client says: " << buffer << std::endl;
+
+            std::string msg = "Message from server..";
+            sendto(sockfd, msg.c_str(), msg.size(), MSG_CONFIRM, (const SOCK_ADDR_TYPE)&clientAddress, address_len);
         }
-        // Else: message is received successfully.
-
-        // received is point to to last index
-        buffer[received] = '\0';
-
-        std::cout << "Client says: " << buffer << std::endl;
-
-        std::string msg = "Message from server..";
-        sendto(sockfd, msg.c_str(), msg.size(), MSG_CONFIRM, (const SOCK_ADDR_TYPE)&clientAddress, address_len);
     }
 }

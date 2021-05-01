@@ -1,5 +1,7 @@
 # ignore object files and binary
 *.o
 binary
+main
+src/udp
 
 .vscode
