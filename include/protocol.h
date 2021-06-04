@@ -4,30 +4,6 @@
 #include <vector>
 #include <memory>
 
-// OS CHECK for SOCKET HEADERS
-#ifdef _WIN32
-// both WIN32 & WIN64
-#define os "windows"
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#include <stdio.h>
-
-#elif __linux__
-// linux
-#define os "linux"
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <netdb.h>
-
-#else
-#define os "unknown"
-
-#endif
-
 enum class ProtocolType;
 
 class IProtocol

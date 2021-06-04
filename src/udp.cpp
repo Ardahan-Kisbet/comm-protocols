@@ -56,7 +56,11 @@ namespace udp_client_server
         {
 
             std::string msg = "Message from client..";
+            #if os == WINDOWS
+            sendto(sockfd, msg.c_str(), msg.size(), 0, (const SOCK_ADDR_TYPE)&serverAddress, sizeof(serverAddress));
+            #elif os == LINUX
             sendto(sockfd, msg.c_str(), msg.size(), MSG_CONFIRM, (const SOCK_ADDR_TYPE)&serverAddress, sizeof(serverAddress));
+            #endif
 
             std::cout << "client message is sent." << std::endl;
 
@@ -74,8 +78,12 @@ namespace udp_client_server
 
             std::cout << "Server says: " << buffer << std::endl;
         }
-        // close socket
+        // close socket - both receiving and transmitting
+        #if os == WINDOWS
+        shutdown(sockfd, SD_BOTH);
+        #elif os == LINUX
         shutdown(sockfd, SHUT_RDWR);
+        #endif
         std::cout << "udp client closed.." << std::endl;
     }
 
@@ -138,7 +146,11 @@ namespace udp_client_server
             std::cout << "Client says: " << buffer << std::endl;
 
             std::string msg = "Message from server..";
+            #if os == WINDOWS
+            sendto(sockfd, msg.c_str(), msg.size(), 0, (const SOCK_ADDR_TYPE)&clientAddress, address_len);
+            #elif os == LINUX
             sendto(sockfd, msg.c_str(), msg.size(), MSG_CONFIRM, (const SOCK_ADDR_TYPE)&clientAddress, address_len);
+            #endif
         }
     }
 }
