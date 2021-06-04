@@ -42,11 +42,7 @@ namespace udp_client_server
     // send message to server
     // wait until response from server is received
     void UdpClient::OpenConn()
-    {
-        #if os == WINDOWS
-        InitWinsock();
-        #endif
-        
+    {        
         // socket file descriptor
         int sockfd;
         char buffer[LibConstants::BUFFER_SIZE];
@@ -56,7 +52,8 @@ namespace udp_client_server
         // domain   - AF_INET: IPv4
         // type     - DGRAM: UDP
         // protocol - 0: default protocol
-        sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+        //sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+        SOCKET _sockfd = socket(AF_INET, SOCK_DGRAM, 0);
         if (sockfd < 0)
         {
             throw "Couldn't open a socket!";
