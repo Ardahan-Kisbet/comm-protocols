@@ -8,6 +8,18 @@ using SOCK_ADDR_TYPE = struct sockaddr *;
 
 namespace udp_client_server
 {
+    void InitWinsock()
+    {
+        WSADATA wsaData;
+        WORD wVersionRequested = MAKEWORD(2, 0);
+        if (WSAStartup(wVersionRequested, &wsaData) != 0) {
+            //LOG("WSAStartup() error");
+            //return false;
+            ;
+        }
+    }
+
+
     // Getter for Client Address
     std::string UdpClient::GetAddress() const
     {
@@ -31,6 +43,10 @@ namespace udp_client_server
     // wait until response from server is received
     void UdpClient::OpenConn()
     {
+        #if os == WINDOWS
+        InitWinsock();
+        #endif
+        
         // socket file descriptor
         int sockfd;
         char buffer[LibConstants::BUFFER_SIZE];
@@ -152,7 +168,6 @@ namespace udp_client_server
             #elif os == LINUX
             sendto(sockfd, msg.c_str(), msg.size(), MSG_CONFIRM, (const SOCK_ADDR_TYPE)&clientAddress, address_len);
             #endif
-
         }     
     }
 }
