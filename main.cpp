@@ -27,10 +27,12 @@ int main()
     std::cout << std::endl
               << static_cast<int>(protocol->GetType()) << std::endl;
 
+    
     std::thread thread_client(create_client);
     std::thread thread_server(create_server);
 
     thread_client.join();
     thread_server.join();
+
     std::cin.get();
 }

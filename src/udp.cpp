@@ -1,6 +1,8 @@
 #include "udp.h"
 #include <iostream>
 #include <cstring>
+#include <thread>
+#include <chrono>
 
 using SOCK_ADDR_TYPE = struct sockaddr *;
 
@@ -54,7 +56,6 @@ namespace udp_client_server
         serverAddress.sin_addr.s_addr = INADDR_ANY; // accept any incoming message
         while (true)
         {
-
             std::string msg = "Message from client..";
             #if os == WINDOWS
             sendto(sockfd, msg.c_str(), msg.size(), 0, (const SOCK_ADDR_TYPE)&serverAddress, sizeof(serverAddress));
@@ -93,6 +94,7 @@ namespace udp_client_server
     // process DGRAM packet and give response to client
     void UdpServer::OpenConn()
     {
+        /* code */
         // socket file descriptor
         int sockfd;
         char buffer[LibConstants::BUFFER_SIZE];
@@ -131,7 +133,6 @@ namespace udp_client_server
         address_len = sizeof(clientAddress);
         while (true)
         {
-
             received = recvfrom(sockfd, buffer, sizeof(buffer), MSG_WAITALL, (SOCK_ADDR_TYPE)&clientAddress, (socklen_t *)&address_len);
 
             if (received < 0)
@@ -151,6 +152,7 @@ namespace udp_client_server
             #elif os == LINUX
             sendto(sockfd, msg.c_str(), msg.size(), MSG_CONFIRM, (const SOCK_ADDR_TYPE)&clientAddress, address_len);
             #endif
-        }
+
+        }     
     }
 }
