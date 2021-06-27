@@ -44,7 +44,6 @@ namespace udp_client_server
     void UdpClient::OpenConn()
     {        
         // socket file descriptor
-        int sockfd;
         char buffer[LibConstants::BUFFER_SIZE];
         struct sockaddr_in serverAddress;
 
@@ -52,8 +51,13 @@ namespace udp_client_server
         // domain   - AF_INET: IPv4
         // type     - DGRAM: UDP
         // protocol - 0: default protocol
-        //sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-        SOCKET _sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+        
+        #if os == WINDOWS
+        SOCKET sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+        #elif os == LINUX
+        int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+        #endif
+        
         if (sockfd < 0)
         {
             throw "Couldn't open a socket!";
@@ -67,11 +71,17 @@ namespace udp_client_server
         serverAddress.sin_family = AF_INET;
         serverAddress.sin_port = htons(LibConstants::SERVER_PORT);
         serverAddress.sin_addr.s_addr = INADDR_ANY; // accept any incoming message
+
+        #if os == WINDOWS
+        InitWinsock();
+        int bindResult = bind(sockfd, (sockaddr*) &serverAddress, sizeof (serverAddress));
+        #endif
+
         while (true)
         {
             std::string msg = "Message from client..";
             #if os == WINDOWS
-            sendto(sockfd, msg.c_str(), msg.size(), 0, (const SOCK_ADDR_TYPE)&serverAddress, sizeof(serverAddress));
+            sendto(sockfd, msg.c_str(), msg.size(), 0, (sockaddr*)&serverAddress, sizeof(serverAddress));
             #elif os == LINUX
             sendto(sockfd, msg.c_str(), msg.size(), MSG_CONFIRM, (const SOCK_ADDR_TYPE)&serverAddress, sizeof(serverAddress));
             #endif
@@ -79,7 +89,12 @@ namespace udp_client_server
             std::cout << "client message is sent." << std::endl;
 
             int received, address_len;
+            #if os == WINDOWS
+            received = recvfrom(sockfd, buffer, sizeof(buffer), 0, (sockaddr*)&serverAddress, &address_len);
+            #elif os == LINUX
             received = recvfrom(sockfd, buffer, sizeof(buffer), MSG_WAITALL, (SOCK_ADDR_TYPE)&serverAddress, (socklen_t *)&address_len);
+            #endif
+
 
             if (received < 0)
             {
@@ -107,9 +122,7 @@ namespace udp_client_server
     // process DGRAM packet and give response to client
     void UdpServer::OpenConn()
     {
-        /* code */
         // socket file descriptor
-        int sockfd;
         char buffer[LibConstants::BUFFER_SIZE];
         struct sockaddr_in serverAddress, clientAddress;
 
@@ -117,7 +130,13 @@ namespace udp_client_server
         // domain   - AF_INET: IPv4
         // type     - DGRAM: UDP
         // protocol - 0: default protocol
-        sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+
+        #if os == WINDOWS
+        SOCKET sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+        #elif os == LINUX
+        int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+        #endif
+
         if (sockfd < 0)
         {
             throw "Couldn't open a socket!";
@@ -146,7 +165,11 @@ namespace udp_client_server
         address_len = sizeof(clientAddress);
         while (true)
         {
+            #if os == WINDOWS
+            received = recvfrom(sockfd, buffer, sizeof(buffer), 0, (sockaddr*)&clientAddress, &address_len);
+            #elif os == LINUX
             received = recvfrom(sockfd, buffer, sizeof(buffer), MSG_WAITALL, (SOCK_ADDR_TYPE)&clientAddress, (socklen_t *)&address_len);
+            #endif
 
             if (received < 0)
             {
